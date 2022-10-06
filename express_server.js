@@ -79,10 +79,18 @@ app.post("/register", (req, res) => {
 
 
 app.get("/register", (req, res) => {
+  const userId = req.cookies["user_id"];
+  if (userId) {
+    res.redirect("/urls");
+  }
   res.render("register");
 });
 
-app.get("/login", (req, res) =>{
+app.get("/login", (req, res) => {
+  const userId = req.cookies["user_id"];
+  if (userId) {
+    res.redirect("/urls");
+  }
   res.render("login");
 }); 
 
@@ -125,10 +133,13 @@ app.post("/urls/:id", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   const userId = req.cookies["user_id"];
-  const templateVars = {
+  if (userId) {
+    const templateVars = {
     userId: users[userId]
-  };
-  res.render("urls_new", templateVars);
+    };
+    res.render("urls_new", templateVars);
+  }
+  res.redirect("/login");
 });
 
 app.get("/hello", (req, res) => {
@@ -168,14 +179,21 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  let shortUrl = generateRandomString();
-  urlDatabase[shortUrl] = req.body.longURL;
-  res.redirect(`/urls/${shortUrl}`);
+  const userId = req.cookies["user_id"];
+  if (userId) {
+    console.log(req.body); // Log the POST request body to the console
+    let shortUrl = generateRandomString();
+    urlDatabase[shortUrl] = req.body.longURL;
+    res.redirect(`/urls/${shortUrl}`);
+  };
+  res.send("URL can't be shorten.");
 });
 
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
+  if (!longURL) {
+    res.send("Does not exist");
+  }
   res.redirect(longURL);
 });
 
