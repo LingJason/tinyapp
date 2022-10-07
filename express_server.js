@@ -1,4 +1,4 @@
-const getUserByEmail = require("./helpers");
+const { getUserByEmail } = require("./helpers");
 const express = require("express");
 const app = express();
 const PORT = 8080;
@@ -27,7 +27,7 @@ const urlsForUser = function(id) {
       urls[shortUrl] = urlDatabase[shortUrl].longURL;
     }
   }
-  return id;
+  return urls;
 };
 
 const urlDatabase = {
@@ -85,25 +85,25 @@ app.post("/register", (req, res) => {
   // Set Cookie & Return to /Url
   //res.cookie("user_id", id)
   req.session["user_id"] = id;
-  res.redirect("/urls");
+  return res.redirect("/urls");
 });
 
 app.get("/register", (req, res) => {
   //const userId = req.cookies["user_id"];
   const userId = req.session["user_id"];
   if (userId) {
-    res.redirect("/urls");
+    return res.redirect("/urls");
   }
-  res.render("register");
+  return res.render("register");
 });
 
 app.get("/login", (req, res) => {
   //const userId = req.cookies["user_id"];
   const userId = req.session["user_id"];
   if (userId) {
-    res.redirect("/urls");
+    return res.redirect("/urls");
   }
-  res.render("login");
+  return res.render("login");
 });
 
 app.post("/login", (req, res) => {
@@ -112,7 +112,7 @@ app.post("/login", (req, res) => {
 
   // Ensures that both Email & Password are provided
   if (!email || !password) {
-    res.status(400).send("Did not enter Email and Password");
+    return res.status(400).send("Did not enter Email and Password");
   }
 
   // Check for Existing Users
@@ -130,12 +130,12 @@ app.post("/login", (req, res) => {
   // Add Cookie
   //res.cookie("user_id", newUser.id);
   req.session["user_id"] = newUser.id;
-  res.redirect("/urls");
+  return res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
   req.session = null;
-  res.redirect("/urls");
+  return res.redirect("/urls");
 });
 
 app.post("/urls/:id", (req, res) => {
@@ -146,9 +146,9 @@ app.post("/urls/:id", (req, res) => {
   const url = urlDatabase[shortUrl];
   if (userId === url.userID) {
     url.longURL = longUrl;
-    res.redirect("/urls");
+    return res.redirect("/urls");
   }
-  res.status(403).send("Access Denied 150");
+  return res.status(403).send("Access Denied");
 });
 
 app.get("/urls/new", (req, res) => {
@@ -158,13 +158,13 @@ app.get("/urls/new", (req, res) => {
     const templateVars = {
       userId: users[userId]
     };
-    res.render("urls_new", templateVars);
+    return res.render("urls_new", templateVars);
   }
-  res.redirect("/login");
+  return res.redirect("/login");
 });
 
 app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+  return res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 
@@ -172,36 +172,36 @@ app.get("/urls/:id", (req, res) => {
   //const userId = req.cookies["user_id"];
   const userId = req.session["user_id"];
   if (!userId) {
-    return res.status(401).send("Must be Log in");
+    return res.status(401).redirect("/login");
   }
   if (userId !== users[userId].id) {
     //add .id after users[userId]
-    return res.status(401).send("Access Denied 175");
+    return res.status(401).send("Access Denied");
   }
   const templateVars = {
     userId: users[userId],
     id: req.params.id,
     longURL: urlDatabase[req.params.id].longURL
   };
-  res.render("urls_show", templateVars);
+  return res.render("urls_show", templateVars);
 });
 
 app.get("/urls", (req, res) => {
   //const userId = req.cookies["user_id"];
   const userId = req.session["user_id"];
   if (!userId) {
-    res.status(401).send("Can't View please <a href='/login'>login</a>");
+    return res.status(403).redirect("/login");
   }
   const templateVars = {
     userId: users[userId],
     urls: urlsForUser(userId),
-  };
-  res.render("urls_index", templateVars);
+  }; 
+  return res.render("urls_index", templateVars);
 });
 
 app.post("/urls/:id/", (req, res) =>{
   const id = req.params.id;
-  res.redirect(`/urls/${id}`);
+  return res.redirect(`/urls/${id}`);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
@@ -211,9 +211,9 @@ app.post("/urls/:id/delete", (req, res) => {
   const url = urlDatabase[id];
   if (userId === url.userID) {
     delete urlDatabase[id];
-    res.redirect(`/urls`);
+    return res.redirect(`/urls`);
   }
-  res.status(403).send("Access Denied 211");
+  return res.status(403).send("Access Denied");
 });
 
 app.post("/urls", (req, res) => {
@@ -227,25 +227,25 @@ app.post("/urls", (req, res) => {
       userID: userId
     };
     urlDatabase[shortUrl] = url;
-    res.redirect(`/urls/${shortUrl}`);
+    return res.redirect(`/urls/${shortUrl}`);
   }
-  res.send("URL can't be shorten.");
+  return res.send("URL can't be shorten.");
 });
 
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id].longURL;
   if (!longURL) {
-    res.send("Does not exist");
+    return res.send("Does not exist");
   }
-  res.redirect(longURL);
+  return res.redirect(longURL);
 });
 
 app.get("/", (req,res) => {
-  res.send("Hello!");
+  return res.send("Hello!");
 });
 
 app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+  return res.json(urlDatabase);
 });
 
 app.listen(PORT, () => {

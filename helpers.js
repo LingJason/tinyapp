@@ -1,12 +1,11 @@
 const getUserByEmail = function(email, usersDatabase) {
-  let user = null;
   for (const userId in usersDatabase) {
-    const userDb = usersDatabase[userId];
-    if (userDb.email === email) {
-      user = userDb;
+    const user = usersDatabase[userId];
+    if (user.email === email) {
+      return user;
     }
   }
-  return user;
+  return undefined;
 };
 
-module.exports = getUserByEmail;
+module.exports = { getUserByEmail };
