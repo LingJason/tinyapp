@@ -91,7 +91,7 @@ app.post("/register", (req, res) => {
 app.get("/register", (req, res) => {
   //const userId = req.cookies["user_id"];
   const userId = req.session["user_id"];
-  if (userId) {
+  if (users[userId]) {
     return res.redirect("/urls");
   }
   return res.render("register");
@@ -100,7 +100,8 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
   //const userId = req.cookies["user_id"];
   const userId = req.session["user_id"];
-  if (userId) {
+  if (users[userId]) {
+    console.log("HERE");
     return res.redirect("/urls");
   }
   return res.render("login");
