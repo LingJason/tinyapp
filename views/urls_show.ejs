@@ -21,7 +21,7 @@
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
           <hr>
           <h4>Edit</h4>
-          <form method = "POST" action="/urls/<%= id %>">
+          <form method = "POST" action="/urls/<%= id %>?_method=PUT">
             <label> New Url</label>
             <input
               name = "newURL"
