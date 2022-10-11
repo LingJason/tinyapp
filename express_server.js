@@ -8,7 +8,6 @@ const cookieSession = require("cookie-session");
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
-//app.use(cookieParser());
 app.set("view engine", "ejs");
 app.use(cookieSession({
   name: 'tinyApp',
@@ -86,13 +85,11 @@ app.post("/register", (req, res) => {
   console.log("users", users);
 
   // Set Cookie & Return to /Url
-  //res.cookie("user_id", id)
   req.session["user_id"] = id;
   return res.redirect("/urls");
 });
 
 app.get("/register", (req, res) => {
-  //const userId = req.cookies["user_id"];
   const userId = req.session["user_id"];
   if (users[userId]) {
     return res.redirect("/urls");
@@ -101,7 +98,6 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  //const userId = req.cookies["user_id"];
   const userId = req.session["user_id"];
   if (users[userId]) {
     return res.redirect("/urls");
@@ -125,13 +121,11 @@ app.post("/login", (req, res) => {
   }
   
   // Check Password
-  //if (newUser.password !== password)
   if (!bcrypt.compareSync(password, newUser.password)) {
     return res.status(403).send("Incorrect information provided");
   }
 
   // Add Cookie
-  //res.cookie("user_id", newUser.id);
   req.session["user_id"] = newUser.id;
   return res.redirect("/urls");
 });
@@ -144,7 +138,6 @@ app.post("/logout", (req, res) => {
 app.put("/urls/:id", (req, res) => {
   const shortUrl = req.params.id;
   const longUrl = req.body.newURL;
-  //const userId = req.cookies["user_id"];
   const userId = req.session["user_id"];
   const url = urlDatabase[shortUrl];
   if (userId === url.userID) {
@@ -155,7 +148,6 @@ app.put("/urls/:id", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  //const userId = req.cookies["user_id"];
   const userId = req.session["user_id"];
   if (users[userId]) {
     const templateVars = {
@@ -172,13 +164,11 @@ app.get("/hello", (req, res) => {
 
 
 app.get("/urls/:id", (req, res) => {
-  //const userId = req.cookies["user_id"];
   const userId = req.session["user_id"];
   if (!users[userId]) {
     return res.status(401).redirect("/login");
   }
   if (userId !== users[userId].id) {
-    //add .id after users[userId]
     return res.status(401).send("Access Denied");
   }
   const templateVars = {
@@ -190,7 +180,6 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  //const userId = req.cookies["user_id"];
   const userId = req.session["user_id"];
   if (!users[userId]) {
     return res.status(403).redirect("/login");
@@ -202,13 +191,8 @@ app.get("/urls", (req, res) => {
   return res.render("urls_index", templateVars);
 });
 
-// app.post("/urls/:id/", (req, res) =>{
-//   const id = req.params.id;
-//   return res.redirect(`/urls/${id}`);
-// });
 
 app.delete("/urls/:id/", (req, res) => {
-  //const userId = req.cookies["user_id"];
   const userId = req.session["user_id"];
   const id = req.params.id;
   const url = urlDatabase[id];
@@ -220,7 +204,6 @@ app.delete("/urls/:id/", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  //const userId = req.cookies["user_id"];
   const userId = req.session["user_id"];
   if (userId) {
     console.log(req.body); // Log the POST request body to the console
