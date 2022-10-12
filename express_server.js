@@ -170,6 +170,10 @@ app.get("/hello", (req, res) => {
 
 
 app.get("/urls/:id", (req, res) => {
+  if (!urlDatabase[req.params.id]) {
+    return res.status(404).send("Short URL not found");
+  }
+
   const userId = req.session["user_id"];
   if (!users[userId]) {
     return res.status(401).redirect("/login");
