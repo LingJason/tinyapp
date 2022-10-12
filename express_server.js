@@ -94,7 +94,10 @@ app.get("/register", (req, res) => {
   if (users[userId]) {
     return res.redirect("/urls");
   }
-  return res.render("register");
+  const templateVars = {
+    userId: users[userId]
+  };
+  return res.render("register", templateVars);
 });
 
 app.get("/login", (req, res) => {
@@ -102,7 +105,10 @@ app.get("/login", (req, res) => {
   if (users[userId]) {
     return res.redirect("/urls");
   }
-  return res.render("login");
+  const templateVars = {
+    userId: users[userId]
+  };
+  return res.render("login", templateVars);
 });
 
 app.post("/login", (req, res) => {
