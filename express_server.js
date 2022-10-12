@@ -174,7 +174,7 @@ app.get("/urls/:id", (req, res) => {
   if (!users[userId]) {
     return res.status(401).redirect("/login");
   }
-  if (userId !== users[userId].id) {
+  if (!urlsForUser(userId)[req.params.id]) {
     return res.status(401).send("Access Denied");
   }
   const templateVars = {
@@ -212,7 +212,6 @@ app.delete("/urls/:id/", (req, res) => {
 app.post("/urls", (req, res) => {
   const userId = req.session["user_id"];
   if (userId) {
-    console.log(req.body); // Log the POST request body to the console
     const shortUrl = generateRandomString();
     const url = {
       longURL: req.body.longURL,
