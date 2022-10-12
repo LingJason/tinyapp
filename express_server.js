@@ -235,7 +235,7 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/", (req,res) => {
-  return res.send("Hello!");
+  return res.redirect('/login');
 });
 
 app.get("/urls.json", (req, res) => {
